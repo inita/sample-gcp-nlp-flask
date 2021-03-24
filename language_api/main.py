@@ -124,7 +124,7 @@ def gcp_classify_text(text):
     for category in response.categories:
         item={}
         item["category.name"]=category.name
-        item["category.confidence"]=category.confidence.0
+        item["category.confidence"]=category.confidence
         sentence_sentiment.append(item)
     return sentence_sentiment
 
