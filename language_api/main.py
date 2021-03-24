@@ -87,7 +87,6 @@ def server_error(e):
     )
 def analyze_text_sentiment(text):
     client = language.LanguageServiceClient()
-
     document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
 
     response = client.analyze_sentiment(document=document)
@@ -111,6 +110,7 @@ def analyze_text_sentiment(text):
         sentence_sentiment.append(item)
 
     return sentence_sentiment
+
 
 if __name__ == "__main__":
     # This is used when running locally. Gunicorn is used to run the
