@@ -33,16 +33,16 @@ def upload_text():
     text = request.form["text"]
 
     # Analyse sentiment using Sentiment API call
-    sentiment = analyze_text_sentiment(text)[0].get('sentiment score')
+    sentiment = gcp_classify_text(text)[0].get('category')
 
     # Assign a label based on the score
-    overall_sentiment = 'unknown'
-    if sentiment > 0:
-        overall_sentiment = 'positive'
-    if sentiment < 0:
-        overall_sentiment = 'negative'
-    if sentiment == 0:
-        overall_sentiment = 'neutral'
+#     overall_sentiment = 'unknown'
+#     if sentiment > 0:
+#         overall_sentiment = 'positive'
+#     if sentiment < 0:
+#         overall_sentiment = 'negative'
+#     if sentiment == 0:
+#         overall_sentiment = 'neutral'
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -87,6 +87,7 @@ def server_error(e):
     )
 def analyze_text_sentiment(text):
     client = language.LanguageServiceClient()
+
     document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
 
     response = client.analyze_sentiment(document=document)
@@ -111,6 +112,21 @@ def analyze_text_sentiment(text):
 
     return sentence_sentiment
 
+# Content Classification
+
+def gcp_classify_text(text):
+    client = language.LanguageServiceClient()
+    document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
+
+    response = client.classify_text(document=document)
+
+    sentence_sentiment = []
+    for category in response.categories:
+        item={}
+        item["category"]=category.name
+        item["confidence"]=category.confidence:.0
+        sentence_sentiment.append(item)
+    return sentence_sentiment
 
 if __name__ == "__main__":
     # This is used when running locally. Gunicorn is used to run the
